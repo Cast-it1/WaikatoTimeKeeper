@@ -7,8 +7,7 @@
 #define RST_PIN 9
 #define SS_PIN 10
 
-int RXPin = 2;
-int TXPin = 3;
+
 int GPSBaud = 9600;
 
 byte readCard[4];
@@ -16,7 +15,7 @@ String MasterTag = "1911ED6E";  // REPLACE this Tag ID with your Tag ID!!!
 String tagID = "";
 
 int counter = 0;
-
+int DST = 13;
 // Create instances
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 LiquidCrystal_I2C lcd(0x27, 16, 2);  //Parameters: (rs, enable, d4, d5, d6, d7)
@@ -33,6 +32,14 @@ void setup() {
   lcd.clear();
   lcd.backlight();
 
+
+
+
+  pinMode(13, OUTPUT);
+
+
+
+
   lcd.clear();
   lcd.print(" Access Control ");
   lcd.setCursor(0, 1);
@@ -43,19 +50,20 @@ void loop() {
 
   //Wait until new tag is available
   while (getRFID()) {
+    digitalWrite(13, LOW);
     lcd.clear();
 
 
-
-
     lcd.setCursor(0, 0);
-    lcd.print(getGPSTime());
+    lcd.print(getGPSTime(DST));
 
     lcd.setCursor(0, 1);
     lcd.print(tagID);
 
     lcd.setCursor(14, 0);
     lcd.print(counter);
+
+    digitalWrite(13, HIGH);
 
     delay(1000);
   }
@@ -82,11 +90,17 @@ boolean getRFID() {
   return true;
 }
 
-String getGPSTime() {
-  String time = "";
+String getGPSTime(int TZ) {
+  String TIME = "";
   String HOUR;
   String MINUTE;
   String SECOND;
+
+  String timeStr = "";
+  String hourStr;
+  String minuteStr;
+  String secondStr;
+
   while (gpsSerial.available() > 0) {
     if (gps.encode(gpsSerial.read())) {
       if (gps.time.isValid()) {
@@ -107,7 +121,26 @@ String getGPSTime() {
         HOUR = gps.time.hour();
         MINUTE = gps.time.minute();
         SECOND = gps.time.second();
-        time = HOUR + ":" + MINUTE + ":" + SECOND;
+        TIME = HOUR + ":" + MINUTE + ":" + SECOND;
+
+
+
+        /*
+        int localHour = (HOUR.toInt() + TZ) % 24; // TZ is the variable for TimeZone(UTC), it can be changed when the function is called
+        if (localHour < 0) localHour += 24;      // Handle negitive values
+
+        // Convert hour, minute, and second to strings and add leading zeros if necessary
+        hourStr = (localHour < 10) ? "0" + String(localHour) : String(localHour);
+        minuteStr = (MINUTE.toInt() < 10) ? "0" + String(MINUTE) : String(MINUTE);
+        secondStr = (SECOND.toInt() < 10) ? "0" + String(SECOND) : String(SECOND);
+        */
+
+
+
+
+
+
+
 
 
       } else {
@@ -115,7 +148,7 @@ String getGPSTime() {
       }
     }
   }
-  return time;
+  return TIME;
 }
 
 double getGPSLat() {
