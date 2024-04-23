@@ -11,10 +11,14 @@
 int TimeZone = 12;
 
 // RFID
-const int RST_PIN = 9;
-const int SS_PIN = 10;
+const int RFID_RST = 9;
+const int RFIC_CS = 10;
 String TagID = "";
 int CardCount = 0;
+
+// CARD LIST
+const int MAX_CARDS = 50;
+String cardList[MAX_CARDS];
 
 // LCD
 const int LCD_COL = 16;
@@ -28,7 +32,8 @@ const int GPSBaud = 9600;
 
 // ===================================== OBJECTS
 // RFID
-MFRC522 mfrc522(SS_PIN, RST_PIN);
+MFRC522 mfrc522(RFIC_CS, RFID_RST);
+MFRC522::MIFARE_Key key;
 
 // LCD
 LiquidCrystal_I2C lcd(0x27, LCD_COL, LCD_ROW);
@@ -36,6 +41,7 @@ LiquidCrystal_I2C lcd(0x27, LCD_COL, LCD_ROW);
 // GPS
 TinyGPSPlus gps;
 SoftwareSerial gpsSerial(RX_PIN, TX_PIN);
+
 // ===================================== END OBJECTS
 
 // ===================================== MAIN FUNCTIONS
@@ -45,7 +51,7 @@ void setup() {
   RFID_SETUP();
   LCD_SETUP();
   GPS_SETUP();
-  Serial.println("All Modules Are Ready.\nSTARTING.");
+  Serial.println(F("All Modules Are Ready.\nSTARTING."));
 }
 
 void loop() {
@@ -56,6 +62,11 @@ void loop() {
     LCD_LOOP(String(CardCount), 14, 0);
   }
  
+ if (gps.location.isValid()) {
+  LCD_LOOP("     ", 11, 1);
+ } else {
+  LCD_LOOP("NoGPS", 11, 1);
+ }
 }
 // ===================================== END MAIN FUNCTIONS
 
@@ -64,7 +75,7 @@ void loop() {
 void RFID_SETUP() {
   SPI.begin();
   mfrc522.PCD_Init();
-  Serial.println("RFID Ready.");
+  Serial.println(F("RFID Ready."));
 }
 
 bool RFID_LOOP() {
@@ -75,16 +86,41 @@ bool RFID_LOOP() {
   if (!mfrc522.PICC_ReadCardSerial()) {  //Since a PICC placed get Serial and continue
     return false;
   }
+
   TagID = "";
   for (uint8_t i = 0; i < 4; i++) {  // The MIFARE PICCs that we use have 4 byte UID
     //readCard[i] = mfrc522.uid.uidByte[i];
-    TagID.concat(String());  // Adds the 4 bytes in a single String variable
+    TagID.concat(String(mfrc522.uid.uidByte[i], HEX));  // Adds the 4 bytes in a single String variable
+    
   }
+  if (isCardInList(TagID)) {
+    TagID = "";
+    return false;
+  }
+
+  addCardToList(TagID);
   CardCount++;
+
   TagID.toUpperCase();
   mfrc522.PICC_HaltA();  // Stop reading
   
   return true;
+}
+
+// CARD LIST
+void addCardToList(String id) {
+  if (CardCount < MAX_CARDS) {
+    cardList[CardCount] = id;
+  }
+}
+
+bool isCardInList(String id) {
+  for (int i = 0; i < CardCount; i++) {
+    if (cardList[i] == id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // LCD
@@ -92,7 +128,7 @@ void LCD_SETUP() {
   lcd.init();
   lcd.clear();
   lcd.backlight();
-  Serial.println("LCD Ready.");
+  Serial.println(F("LCD Ready."));
 }
 
 void LCD_LOOP(String message, int col, int row) {
@@ -104,7 +140,7 @@ void LCD_LOOP(String message, int col, int row) {
 // GPS
 void GPS_SETUP() {
   gpsSerial.begin(GPSBaud);
-  Serial.println("GPS Ready.");
+  Serial.println(F("GPS Ready."));
 }
 
 String GPS_TIME() {
@@ -126,7 +162,7 @@ String GPS_TIME() {
       if (gps.time.second() < 10) timeString += "0";
       timeString += String(gps.time.second());
 
-      Serial.println(timeString);
+      //Serial.println(timeString);
       break;
     }
   }

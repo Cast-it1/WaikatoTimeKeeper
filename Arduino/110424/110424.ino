@@ -78,7 +78,7 @@ bool RFID_LOOP() {
   TagID = "";
   for (uint8_t i = 0; i < 4; i++) {  // The MIFARE PICCs that we use have 4 byte UID
     //readCard[i] = mfrc522.uid.uidByte[i];
-    TagID.concat(String());  // Adds the 4 bytes in a single String variable
+    TagID.concat(String(mfrc522.uid.uidByte[i], HEX));  // Adds the 4 bytes in a single String variable
   }
   CardCount++;
   TagID.toUpperCase();
