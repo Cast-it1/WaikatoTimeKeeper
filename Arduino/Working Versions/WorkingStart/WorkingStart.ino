@@ -230,7 +230,7 @@ bool SD_SETUP() {
 }
 
 void SD_LOOP(String time, String date, double lat, double lng, String ID) {
-  const String filename = "/test.csv";
+  const String filename = "/start.csv";
 
   digitalWrite(SD_CS, LOW);
   
