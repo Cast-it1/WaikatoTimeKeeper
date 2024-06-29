@@ -11,9 +11,10 @@ SD shield
 GPS neo-7m
 LCD with I2C backpack
 RFID-RC522
+Active Buzzer
 */
 
-// TimeKeeper
+// TimeKeeper - Finish
 // ===================================== LIBRARIES
 #include <SPI.h>
 #include <MFRC522.h>
@@ -241,7 +242,7 @@ bool SD_SETUP() {
 }
 
 void SD_LOOP(String time, String date, double lat, double lng, String ID) {
-  const String filename = "/test.csv";
+  const String filename = "/finish.csv";
 
   digitalWrite(SD_CS, LOW);
   

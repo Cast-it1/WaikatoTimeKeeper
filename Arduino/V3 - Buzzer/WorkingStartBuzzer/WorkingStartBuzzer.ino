@@ -11,9 +11,10 @@ SD shield
 GPS neo-7m
 LCD with I2C backpack
 RFID-RC522
+Active Buzzer
 */
 
-// TimeKeeper
+// TimeKeeper - Start
 // ===================================== LIBRARIES
 #include <SPI.h>
 #include <MFRC522.h>
@@ -48,10 +49,13 @@ const int TX_PIN = 25;
 const int GPSBaud = 9600;
 String Time;
 String Date;
-bool gpsReady;
 
 // SD
 const int SD_CS = 5;
+
+// BUZZER
+const int BUZZER = 16; 
+const long interval = 80; // interval at which to buzz (milliseconds)
 // ===================================== END VARIABLES
 
 // ===================================== OBJECTS
@@ -77,6 +81,7 @@ void setup() {
   RFID_SETUP();
   LCD_SETUP();
   GPS_SETUP();
+  pinMode(BUZZER, OUTPUT);
 
   if (!SD_SETUP()) {
     Serial.println(F("ERROR: CHECK SD CARD"));
@@ -103,10 +108,8 @@ void loop() {
 
   if (gps.location.isValid()) {
     LCD_LOOP("     ", 11, 1);
-    gpsReady = true;
   } else {
     LCD_LOOP("NoGPS", 11, 1);
-    gpsReady = false;
   }
 }
 // ===================================== END MAIN FUNCTIONS
@@ -120,9 +123,6 @@ void RFID_SETUP() {
 }
 
 bool RFID_LOOP() {
-  if (!gpsReady) {  // dont let the user scan a card if the GPS has not got a valid fix
-    return false;
-  }
   // Getting ready for Reading PICCs
   if (!mfrc522.PICC_IsNewCardPresent()) {  //If a new PICC placed to RFID reader continue
     return false;
@@ -144,6 +144,12 @@ bool RFID_LOOP() {
   addCardToList(TagID);
   CardCount++;
 
+  digitalWrite(BUZZER, HIGH);
+  Serial.println("Buzz start");
+  delay(interval);
+  digitalWrite(BUZZER, LOW);
+  Serial.println("Buzz stop");
+  
   TagID.toUpperCase();
   mfrc522.PICC_HaltA();  // Stop reading
 
@@ -236,7 +242,7 @@ bool SD_SETUP() {
 }
 
 void SD_LOOP(String time, String date, double lat, double lng, String ID) {
-  const String filename = "/finish.csv";
+  const String filename = "/start.csv";
 
   digitalWrite(SD_CS, LOW);
   

@@ -11,9 +11,10 @@ SD shield
 GPS neo-7m
 LCD with I2C backpack
 RFID-RC522
+Active Buzzer
 */
 
-// TimeKeeper
+// TimeKeeper - Start
 // ===================================== LIBRARIES
 #include <SPI.h>
 #include <MFRC522.h>
@@ -46,6 +47,7 @@ const int LCD_ROW = 2;
 const int RX_PIN = 26;
 const int TX_PIN = 25;
 const int GPSBaud = 9600;
+bool GPS_ready;
 String Time;
 String Date;
 
@@ -107,8 +109,10 @@ void loop() {
 
   if (gps.location.isValid()) {
     LCD_LOOP("     ", 11, 1);
+    GPS_ready = true;
   } else {
     LCD_LOOP("NoGPS", 11, 1);
+    GPS_ready = false;
   }
 }
 // ===================================== END MAIN FUNCTIONS
@@ -123,6 +127,9 @@ void RFID_SETUP() {
 
 bool RFID_LOOP() {
   // Getting ready for Reading PICCs
+  if (!GPS_ready) {  //If GPS doesnt have a fix, dont let the user scan a card
+    return false;
+  }
   if (!mfrc522.PICC_IsNewCardPresent()) {  //If a new PICC placed to RFID reader continue
     return false;
   }
@@ -241,7 +248,7 @@ bool SD_SETUP() {
 }
 
 void SD_LOOP(String time, String date, double lat, double lng, String ID) {
-  const String filename = "/test.csv";
+  const String filename = "/start.csv";
 
   digitalWrite(SD_CS, LOW);
   
