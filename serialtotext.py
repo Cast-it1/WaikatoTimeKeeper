@@ -15,30 +15,37 @@ exit_button.pack()
 
 def readSerial(comport, baud):
     # Open the serial port
-    ser = serial.Serial(comport, baud, timeout=0.1)
+    try:
+        ser = serial.Serial(comport, baud, timeout=0.1)
+    except serial.SerialException:
+        print(f"Could not open {comport}. Exiting...")
+        return
+    
+    list_data = []
 
     while True:
         # Read data from the serial port
         data = ser.readline().decode().strip()
-        if data:
+        if data and data not in list_data:
             # Print the data to the console
             print(data)
             # Write the data using the keyboard
             keyboard.write(data)
-            # Simulate pressing 'home' and 'right' keys
+            # Simulate pressing 'down', 'home' and 'right' keys
             keyboard.press_and_release('down, home, right')
+            list_data.append(data)
 
 def open_xlsx_file(filepath):
     subprocess.Popen(['start', 'excel', filepath], shell=True)
 
 if __name__ == '__main__':
     # Start the serial reading in a separate thread
-    serial_thread = threading.Thread(target=readSerial, args=('COM4', 115200))
+    serial_thread = threading.Thread(target=readSerial, args=('COM10', 115200))
     serial_thread.daemon = True
     serial_thread.start()
     
     # Open the xlsx file
-    open_xlsx_file('./Scrutinize check.xlsx')
+    open_xlsx_file('./scrutinizing.xls')
     
     # Start the Tkinter event loop
     window.mainloop()
