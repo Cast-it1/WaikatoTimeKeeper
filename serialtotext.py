@@ -40,12 +40,12 @@ def open_xlsx_file(filepath):
 
 if __name__ == '__main__':
     # Start the serial reading in a separate thread
-    serial_thread = threading.Thread(target=readSerial, args=('COM10', 115200))
+    serial_thread = threading.Thread(target=readSerial, args=('COM4', 115200))
     serial_thread.daemon = True
     serial_thread.start()
     
     # Open the xlsx file
-    open_xlsx_file('./scrutinizing.xls')
+    open_xlsx_file('C:/Program Files/WaikatoTimeKeeper/scrutinizing.xls')
     
     # Start the Tkinter event loop
     window.mainloop()
