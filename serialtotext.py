@@ -35,8 +35,8 @@ def readSerial(comport, baud):
             keyboard.press_and_release('down, home, right')
             list_data.append(data)
 
-def open_xlsx_file(filepath):
-    subprocess.Popen(['start', 'excel', filepath], shell=True)
+def open_timekeeper(filepath):
+    subprocess.Popen(filepath, shell=True)
 
 if __name__ == '__main__':
     # Start the serial reading in a separate thread
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     serial_thread.start()
     
     # Open the xlsx file
-    open_xlsx_file('./scrutinizing.xls')
+    open_timekeeper('C:\Program Files\TimeKeeper\TimeKeeper.exe')
     
     # Start the Tkinter event loop
     window.mainloop()
