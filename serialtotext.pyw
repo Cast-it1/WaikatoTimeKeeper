@@ -26,21 +26,19 @@ def readSerial(comport, baud):
     while True:
         # Read data from the serial port
         data = ser.readline().decode().strip()
-        if data and data not in list_data:
+        if data: # and data not in list_data:
             # Print the data to the console
             print(data)
             # Write the data using the keyboard
             keyboard.write(data)
-            # Simulate pressing 'down', 'home' and 'right' keys
-            keyboard.press_and_release('down, home, right')
-            list_data.append(data)
+            #list_data.append(data)
 
 def open_timekeeper(filepath):
     subprocess.Popen(filepath, shell=True)
 
 if __name__ == '__main__':
     # Start the serial reading in a separate thread
-    serial_thread = threading.Thread(target=readSerial, args=('COM4', 115200))
+    serial_thread = threading.Thread(target=readSerial, args=('COM10', 115200))
     serial_thread.daemon = True
     serial_thread.start()
     
