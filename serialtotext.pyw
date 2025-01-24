@@ -38,7 +38,7 @@ def open_timekeeper(filepath):
 
 if __name__ == '__main__':
     # Start the serial reading in a separate thread
-    serial_thread = threading.Thread(target=readSerial, args=('COM10', 115200))
+    serial_thread = threading.Thread(target=readSerial, args=('COM3', 115200))
     serial_thread.daemon = True
     serial_thread.start()
     
