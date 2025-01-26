@@ -43,7 +43,7 @@ if __name__ == '__main__':
     serial_thread.start()
     
     # Open the xls file
-    open_timekeeper('C:\Users\Timekeeper\Documents\scrutinising.xls')
+    open_timekeeper('C:\\Users\\Timekeeper\\Documents\\scrutinising.xls')
     
     # Start the Tkinter event loop
     window.mainloop()
