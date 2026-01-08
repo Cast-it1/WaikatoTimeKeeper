@@ -42,8 +42,5 @@ if __name__ == '__main__':
     serial_thread.daemon = True
     serial_thread.start()
     
-    # Open the xlsx file
-    open_timekeeper('C:\\Program Files\\TimeKeeper\\TimeKeeper.exe')
-    
     # Start the Tkinter event loop
     window.mainloop()
