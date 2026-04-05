@@ -94,7 +94,7 @@ void setup() {
 
   SD_PRELOAD();
 
-  Serial.println(F("All Modules Are Ready.\nSTARTING."));
+  Serial.println(F("MAIN: All Modules Are Ready.\nSTARTING."));
 }
 
 void loop() {
@@ -121,7 +121,7 @@ void loop() {
 void RFID_SETUP() {
   SPI.begin();
   mfrc522.PCD_Init();
-  Serial.println(F("RFID Ready."));
+  Serial.println(F("RFID: Ready."));
 }
 
 bool RFID_LOOP() {
@@ -150,10 +150,10 @@ bool RFID_LOOP() {
   CardCount++;
 
   digitalWrite(BUZZER, HIGH);
-  Serial.println("Buzz start");
+  Serial.println("RFID: Buzz start");
   delay(interval);
   digitalWrite(BUZZER, LOW);
-  Serial.println("Buzz stop");
+  Serial.println("RFID: Buzz stop");
 
   mfrc522.PICC_HaltA();  // Stop reading
 
@@ -181,7 +181,7 @@ void LCD_SETUP() {
   lcd.init();
   lcd.clear();
   lcd.backlight();
-  Serial.println(F("LCD Ready."));
+  Serial.println(F("LCD: Ready."));
 }
 
 void LCD_LOOP(String message, int col, int row) {
@@ -193,7 +193,7 @@ void LCD_LOOP(String message, int col, int row) {
 // GPS
 void GPS_SETUP() {
   gpsSerial.begin(GPSBaud);
-  Serial.println(F("GPS Ready."));
+  Serial.println(F("GPS: Ready."));
 }
 
 void GPS_TIME() {
@@ -237,10 +237,10 @@ void ConvertToLocalTime(int& hour) {
 // SD
 bool SD_SETUP() {
   if (!SD.begin(SD_CS)) {
-    Serial.println("SD FAILED");
+    Serial.println(F("SD: FAILED"));
     return false;
   }
-  Serial.println("SD Ready");
+  Serial.println(F("SD: Ready"));
   digitalWrite(SD_CS, HIGH);
   return true;
 }
@@ -318,35 +318,35 @@ void SD_LOOP(String time, String date, double lat, double lng, String ID) {
 
   switch (existingFile) {
     case true:
-      Serial.println("Existing File, Will Write To That.");
+      Serial.println(F("SD: Existing File, Will Write To That."));
 
       myFile = SD.open(filename, FILE_APPEND);
       // if the file opened okay, write to it:
       if (myFile) {
-        Serial.print("Writing to file...");
+        Serial.print(F("SD: Writing to file..."));
         myFile.println(Text2Write);
         // close the file:
         myFile.close();
-        Serial.println("done.");
+        Serial.println(F("SD: done."));
       } else {
         // if the file didn't open, print an error:
-        Serial.println("error opening file");
+        Serial.println(F("SD: error opening file"));
       }
       break;
     case false:
-      Serial.println("NO Existing File, Creating New.");
+      Serial.println(F("SD: No Existing File, Creating New."));
 
       myFile = SD.open(filename, FILE_WRITE);
       // if the file opened okay, write to it:
       if (myFile) {
-        Serial.print("Writing to file...");
+        Serial.print(F("SD: Writing to file..."));
         myFile.println(Text2Write);
         // close the file:
         myFile.close();
-        Serial.println("done.");
+        Serial.println(F("SD: done."));
       } else {
         // if the file didn't open, print an error:
-        Serial.println("error opening file");
+        Serial.println(F("SD: error opening file"));
       }
       break;
   }
