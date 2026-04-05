@@ -155,7 +155,6 @@ bool RFID_LOOP() {
   digitalWrite(BUZZER, LOW);
   Serial.println("Buzz stop");
 
-  TagID.toUpperCase();
   mfrc522.PICC_HaltA();  // Stop reading
 
   return true;
